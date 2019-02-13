@@ -67,7 +67,7 @@ class Chromosome:
             bag = ""
             for a in range(self.bitsPerGene):
                 bag += self.chromosome[a]
-            if bag != "000":
+            if bag not = "000":
                 pass
             for item in self.items:
                 profit += item.p
