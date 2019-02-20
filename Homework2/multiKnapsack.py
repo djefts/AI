@@ -1,5 +1,6 @@
 import copy
 import math
+import numpy as np
 
 # Andrew Forste & David Jefts
 # CS455 Spring 2019
@@ -8,7 +9,6 @@ import math
 ''' TODO:
         Initial chromosome population
         Crosover
-        Mutuation
         Return final result
 '''
 
@@ -27,7 +27,14 @@ class multiKnapsack:
             items.append(Item(p, w))
         
         aChromosome = Chromosome(k, items, W)
-        
+        aChromosome.mutate()
+        print(aChromosome)
+        aChromosome.mutate()
+        print(aChromosome)
+        aChromosome.mutate()
+        print(aChromosome)
+        aChromosome.mutate()
+        print(aChromosome)
         # for i in range(len(p)):
         #   print(p[i])
 
@@ -39,19 +46,45 @@ class Item:
 
 
 class Chromosome:
-    def __init__(self, numKnapSacks, items, maxWeight):
+    def __init__(self, numKnapSacks, items, maxWeight, chromosome=None):
         self.k = numKnapSacks
         self.W = maxWeight
         self.n = len(items)
         self.items = items
         self.bitsPerGene = math.ceil(math.log2(k))
         self.knapsacks = [(0, 0)] * numKnapSacks
+        self.chromosome = []
         
-        gene = [0] * self.bitsPerGene
-        self.chromosome = gene * self.n
-        print("Created chromosome: " + str(self))
-        print("Chromosome Legal: " + str(self.verifyLegal()))
+        #Build new
+        if chromosome==None:
+            gene = [0] * self.bitsPerGene
+            self.chromosome = gene * self.n
+            print("Created chromosome: " + str(self))
+        #Copy parent
+        else:
+            self.chromosome=chromosome[:]
+
+    def mutate(self):
+        #Find a place to mutate
+        locationOfMutation = np.random.randint(0,len(self.chromosome))
+        bitSwap = self.chromosome[locationOfMutation]
+
+        #Mutate if will create legal child only
+        tempChromosome = self.clone()
+        if bitSwap==0:
+            tempChromosome.chromosome[locationOfMutation]=1
+            if tempChromosome.verifyLegal():
+                self.chromosome=tempChromosome.chromosome
+            else:
+                self.mutate()
+        else:
+            tempChromosome.chromosome[locationOfMutation]=0
+            if tempChromosome.verifyLegal():
+                self.chromosome=tempChromosome.chromosome
+            else:
+                self.mutate()
     
+    #Used to determine if object is legal
     def verifyLegal(self):
         binary = ''
         for gene in range(0, self.n, self.bitsPerGene):
@@ -90,6 +123,9 @@ class Chromosome:
             fitness += profit * weight_ratio
         return fitness
     
+    def clone(self):
+        return Chromosome(self.k, self.items, self.W, self.chromosome)
+
     def __str__(self):
         return str(self.chromosome)
 
