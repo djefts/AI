@@ -1,6 +1,6 @@
 import copy
 import math
-import numpy as np
+import random
 
 # Andrew Forste & David Jefts
 # CS455 Spring 2019
@@ -37,7 +37,7 @@ class Chromosome:
             self.chromosome=chromosome[:]
 
     def crossover(self,otherChrom):
-        point = np.random.randint(0,len(self.chromosome))
+        point = random.randint(0,len(self.chromosome))
         print("Chromo length:",len(self.chromosome),"Point:",point)
 
         # split self
@@ -61,7 +61,7 @@ class Chromosome:
 
     def mutate(self):
         #Find a place to mutate
-        locationOfMutation = np.random.randint(0,len(self.chromosome))
+        locationOfMutation = random.randint(0,len(self.chromosome))
         bitSwap = self.chromosome[locationOfMutation]
 
         #Mutate if will create legal child only
@@ -106,7 +106,7 @@ class Chromosome:
                 self.knapsacks[b][0] = 0   # set the bag's profit to 0
                 self.knapsacks[b][1] = 0   # set the bag's weight to 0
         #set knapsacks
-        for item in self.items:
+        for i in range(len(self.items)):
             numero = self.getBagNum(i)
             if numero != 0:  # if the item is placed in a bag
                 self.knapsacks[numero-1][0] += self.items[i].p
@@ -207,7 +207,7 @@ class GA:
         for i in range(self.populationSize):
             self.population[i] = Chromosome(self.numBags, self.items, self.maxWeight)
             for bit in range(len(self.population[i].chromosome)):
-                rand = np.random.randint(0,100)
+                rand = random.randint(0,100)
                 if rand >= 50:
                     self.population[i].chromosome[bit] = 1
                 if not self.population[i].verifyLegal():
