@@ -169,7 +169,7 @@ class GA:
         #Run
         self.buildPopulation()
 
-        #test cases
+        #Test
         #self.test()
 
     def init_items(self, p, w):
