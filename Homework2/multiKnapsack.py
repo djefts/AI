@@ -113,11 +113,9 @@ class Chromosome:
     def calculateFitness(self):
         fitness = 0
         self.set_knapsacks()
-        print("The knapsacks:",self.knapsacks)
         for bag in range(len(self.knapsacks)):
             profit = self.knapsacks[bag][0]
             weight = self.knapsacks[bag][1]
-            print("bag",bag,"has profit", profit, "and weight:",weight)
             weight_ratio = 1 + ((self.W - weight) / self.W)
             fitness += profit * weight_ratio
         return fitness
@@ -167,19 +165,12 @@ class GA:
         if numBags < 1 or W < 1:
             print("Please supply positive weight and number of knapsacks")
             return
-        
-        """ DREW'S TESTING CRAP """
-        #self.buildPopulation()
-        """chromo3 = Chromosome(numBags,self.items,W,[0,0,0,0])
-        
-        chromo3 = Chromosome(numBags,self.items,W,[0,0,0,0])
-        print("Chromo2:",chromo2.verifyLegal())
-        """
+
+        #Run
+        self.buildPopulation()
+
         #test cases
-        self.test()
-        # for i in range(len(p)):
-        #   print(p[i])
-        """ DREW'S TESTING CRAP """
+        #self.test()
 
     def init_items(self, p, w):
         if len(p) != len(w):
