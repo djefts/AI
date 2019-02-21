@@ -25,7 +25,7 @@ class Chromosome:
         self.n = len(items)
         self.items = items
         self.bitsPerGene = math.ceil(math.log2(numBags))+1
-        self.knapsacks = [[0, 0]] * numKnapSacks  # tuple is (currProfit, currWeight)
+        self.knapsacks = self.generateKnapsacks()
         self.chromosome = []
         
         # Default build
@@ -37,8 +37,7 @@ class Chromosome:
             self.chromosome=chromosome[:]
 
     def crossover(self,otherChrom):
-        point = random.randint(0,len(self.chromosome))
-        print("Chromo length:",len(self.chromosome),"Point:",point)
+        point = random.randint(0,len(self.chromosome)-1)
 
         # split self
         x1 = self.chromosome[0:point]
@@ -51,7 +50,6 @@ class Chromosome:
         # crossover by appending sublists
         child1 = Chromosome(self.numBags, self.items,self.W, x1+y2)
         child2 = Chromosome(self.numBags, self.items,self.W, y1+x2)
-        #print("Child1:",child1, "Child2:", child2)
 
         #Verify the children are legal before returning
         if child1.verifyLegal() and child2.verifyLegal():   
@@ -61,7 +59,7 @@ class Chromosome:
 
     def mutate(self):
         #Find a place to mutate
-        locationOfMutation = random.randint(0,len(self.chromosome))
+        locationOfMutation = random.randint(0,len(self.chromosome)-1)
         bitSwap = self.chromosome[locationOfMutation]
 
         #Mutate if will create legal child only
@@ -113,16 +111,23 @@ class Chromosome:
                 self.knapsacks[numero-1][1] += self.items[i].w
     
     def calculateFitness(self):
-        calculateFitness = 0
+        fitness = 0
         self.set_knapsacks()
+        print("The knapsacks:",self.knapsacks)
         for bag in range(len(self.knapsacks)):
             profit = self.knapsacks[bag][0]
             weight = self.knapsacks[bag][1]
             print("bag",bag,"has profit", profit, "and weight:",weight)
             weight_ratio = 1 + ((self.W - weight) / self.W)
-            calculateFitness += profit * weight_ratio
-        return calculateFitness
-    
+            fitness += profit * weight_ratio
+        return fitness
+
+    def generateKnapsacks(self):
+        knapsacks = [[0,0]]
+        for i in range(self.numBags-1):
+             knapsacks.append([0,0])
+        return knapsacks
+
     def clone(self):
         return Chromosome(self.numBags, self.items, self.W, self.chromosome)
 
@@ -165,33 +170,13 @@ class GA:
         
         """ DREW'S TESTING CRAP """
         #self.buildPopulation()
-
-        """ aChromosome = Chromosome(numBags, self.items, W)
-        print("Is legal:",aChromosome.verifyLegal())
-        aChromosome.mutate()
-        print(aChromosome)
-        aChromosome.mutate()
-        print(aChromosome)
-        aChromosome.mutate()
-        print(aChromosome)
-        aChromosome.mutate()
-        print(aChromosome)
-
-        chromo3 = Chromosome(numBags,self.items,W,[0,0,0,0])
-        chromo2 = Chromosome(numBags, self.items, W, [1,0,1,0])
+        """chromo3 = Chromosome(numBags,self.items,W,[0,0,0,0])
+        
         chromo3 = Chromosome(numBags,self.items,W,[0,0,0,0])
         print("Chromo2:",chromo2.verifyLegal())
-        chromo4,chromo5=chromo2.crossover(chromo3)
-        print("Chromo4: ", chromo4, chromo4.calculateFitness())
-        print("Chromo5: ", chromo5, chromo5.calculateFitness()) """
+        """
         #test cases
         self.test()
-        
-        #True false test
-        chromo2 = Chromosome(numBags, self.items, W, [1,0,1,0])
-        print("This should say True:",chromo2.verifyLegal())
-        chromoIllegal = Chromosome(numBags, self.items,W,[1,0,1,1])
-        print("This should say False:",chromoIllegal.verifyLegal())
         # for i in range(len(p)):
         #   print(p[i])
         """ DREW'S TESTING CRAP """
@@ -237,6 +222,8 @@ class GA:
         return ""
 
     def test(self):
+
+        #Fitness
         self.population[0] = Chromosome(self.numBags, self.items, W, [0,0,0,0]) # no items
         self.population[1] = Chromosome(self.numBags, self.items, W, [0,0,0,1]) # 1 item
         self.population[2] = Chromosome(self.numBags, self.items, W, [0,1,0,1]) # overweight
@@ -246,8 +233,32 @@ class GA:
         print("Empty bag",self.population[0],"with fitness (0):", self.population[0].calculateFitness())
         print("1 item bag",self.population[1],"with fitness (6):", self.population[1].calculateFitness())
         print("Overweight bag",self.population[2],"with fitness (1.6):", self.population[2].calculateFitness())
-        print("Best V1",self.population[3],"with fitness (10,2)", self.population[3].calculateFitness())
-        print("Best V2",self.population[4],"with fitness (10.2)", self.population[4].calculateFitness())
+        print("Best V1",self.population[3],"with fitness (9):", self.population[3].calculateFitness())
+        print("Best V2",self.population[4],"with fitness (9):", self.population[4].calculateFitness())
+
+        #Mutation and crossover
+        print("\nMutation and Crossover:")
+        aChromosome = Chromosome(numBags, self.items, W)
+        aChromosome.mutate()
+        print(aChromosome)
+        aChromosome.mutate()
+        print(aChromosome)
+        aChromosome.mutate()
+        print(aChromosome)
+        aChromosome.mutate()
+        print(aChromosome)
+        chromo2 = Chromosome(numBags, self.items, W, [0,1,0,1])
+        chromo3 = Chromosome(numBags,self.items, W, [1,0,1,0])
+        print("Crossing",chromo2, "with",chromo3)
+        chromo4,chromo5=chromo2.crossover(chromo3)
+        print("Chromo4: ", chromo4, chromo4.calculateFitness())
+        print("Chromo5: ", chromo5, chromo5.calculateFitness())
+
+        print("\nTrue false test:")
+        chromo2 = Chromosome(numBags, self.items, W, [1,0,1,0])
+        print("This should say True:",chromo2.verifyLegal())
+        chromoIllegal = Chromosome(numBags, self.items,W,[1,0,1,1])
+        print("This should say False:",chromoIllegal.verifyLegal())
 
 # Put Parameters Here:
 # Profit for each item
