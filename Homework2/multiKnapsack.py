@@ -137,13 +137,13 @@ class Chromosome:
 class GA:
     def __init__(self, p, w, W, num_bags):
         # Population parameters
-        self.population_size = 15
+        self.population_size = 20  # this number must be even or reproduction causes errors
         self.num_generations = 30
         self.probC = .7
         self.probM = .1
         
         # Initialize list class variables for population and roulette wheel
-        self.population = [Chromosome] * self.population_size
+        self.population = []
         self.roulette_min = [0] * self.population_size
         self.roulette_max = [0] * self.population_size
         
@@ -174,8 +174,8 @@ class GA:
             self.items.append(Item(p[i], w[i]))
     
     def build_population(self):
-        for i in range(self.population_size):
-            self.population[i] = Chromosome(self.num_bags, self.items, self.max_weight)
+        for i in range(0, self.population_size):
+            self.population.append(Chromosome(self.num_bags, self.items, self.max_weight))
             for bit in range(len(self.population[i].chromosome)):
                 rand = random.randint(0, 100)
                 if rand >= 50:
@@ -222,7 +222,7 @@ class GA:
             rand = random.uniform(0, 1)
             # crossover
             if rand <= self.probC:
-                x.crossover(y)
+                x, y = x.crossover(y)
             rand = random.uniform(0, 1)
             # mutate
             if rand <= self.probM:
