@@ -2,11 +2,12 @@ import copy
 import math
 import random
 
+
 # Andrew Forste & David Jefts
 # CS455 Spring 2019
 # HW2, question #3
 
-#===================FOR RUNTIME USE, SEE BOTTOM OF FILE
+# ===================FOR RUNTIME USE, SEE BOTTOM OF FILE
 
 
 class Item:
@@ -50,7 +51,8 @@ class Chromosome:
         
         # Verify the children are legal before returning
         if child1.verify_legal() and child2.verify_legal():
-            #print("\tCrossed",self.chromosome,"with",other_chrom.chromosome,"and got",child1.chromosome, "and",child2.chromosome)
+            # print("\tCrossed",self.chromosome,"with",other_chrom.chromosome,"and got",child1.chromosome, "and",
+            # child2.chromosome)
             return child1, child2
         else:
             return self.crossover(other_chrom)
@@ -65,7 +67,7 @@ class Chromosome:
         if bitSwap == 0:
             tempChromosome.chromosome[locationOfMutation] = 1
             if tempChromosome.verify_legal():
-                #print("\t\tMutating",self.chromosome,"to",tempChromosome.chromosome)
+                # print("\t\tMutating",self.chromosome,"to",tempChromosome.chromosome)
                 self.chromosome = tempChromosome.chromosome
             else:
                 self.mutate()
@@ -229,7 +231,7 @@ class GA:
             new_population.append(x)
             new_population.append(y)
         self.population = new_population
-
+    
     def get_average(self):
         sum = 0
         for pop in self.population:
@@ -245,14 +247,13 @@ class GA:
                 best = pop
                 bestF = fit
         return best
-
     
     def run(self):
         best = Chromosome(self.num_bags, self.items, self.max_weight)
         best_overall = Chromosome(self.num_bags, self.items, self.max_weight)
         self.build_population()
         for i in range(self.num_generations):
-            print("\nGeneration",i+1)
+            print("\nGeneration", i + 1)
             self.reproduction_loop()
             best = self.get_best().clone()
             if best.calculate_fitness() > best_overall.calculate_fitness():
@@ -261,22 +262,23 @@ class GA:
             print("\tBest fitness:", best.calculate_fitness())
             print("\tAverage:", self.get_average())
         self.print_results(best_overall)
-
+    
     def print_results(self, best):
         print()
-
+        
         print("=====FINAL RESULTS=====")
         for i in range(len(self.items)):
             if best.get_bag_num(i) == 0:
-                print("Place item",i+1, "in no bag")
+                print("Place item", i + 1, "in no bag")
             else:
-                print("Place item",i+1, "in bag",best.get_bag_num(i))
+                print("Place item", i + 1, "in bag", best.get_bag_num(i))
         
         for i in range(self.num_bags):
-            print("Bag",i+1,"with weight:",best.knapsacks[i][1],"and profit:",best.knapsacks[i][0])
-
-        print("Final best fitness:",best.calculate_fitness())
+            print("Bag", i + 1, "with weight:", best.knapsacks[i][1], "and profit:", best.knapsacks[i][0])
         
+        print("Final best fitness:", best.calculate_fitness())
+
+
 # Put Parameters Here:
 # Profit for each item
 p = [3, 5, 1, 6]
@@ -286,8 +288,8 @@ w = [5, 4, 7, 3]
 W = 10
 # Number of Knapsacks
 numBags = 2
-#To change mutation, crossover, pop size, and generations, see line 138
+# To change mutation, crossover, pop size, and generations, see line 138
 
-#Alogrithm runs
+# Alogrithm runs
 genetic = GA(p, w, W, numBags)
 genetic.run()
